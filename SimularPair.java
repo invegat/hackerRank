@@ -1,7 +1,5 @@
 import java.io.*;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.TreeSet;
+import java.util.*;
 
 import static java.lang.System.nanoTime;
 
@@ -19,6 +17,19 @@ public class SimularPair {
         public int compareTo(Node o) {
             return this.value.compareTo(o.value);
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Node node = (Node) o;
+            return value.equals(node.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(value);
+        }
     }
 
     public static void main(String[] args) throws IOException {
@@ -34,20 +45,20 @@ public class SimularPair {
         int n = Integer.parseInt(nk[0].trim());
 
         int k = Integer.parseInt(nk[1].trim());
-        TreeSet<Node> nodes = new TreeSet<>();
+        HashMap<Node, Node> nodes = new HashMap<>();
         long result = 0;
         SimularPair s = new SimularPair();
 
-
+        Node dummyParent = s.new Node(0, null);
         String[] edgesRowItems = br.readLine().split(" ");
         TreeSet<Integer> t = new TreeSet<>();
         int _parent = Integer.parseInt(edgesRowItems[0].trim());
         int child = Integer.parseInt(edgesRowItems[1].trim());
         Node parent = s.new Node(_parent, null);
-        nodes.add(parent);
-        parent = nodes.floor(parent);
+        nodes.put(parent, parent);
+        parent = nodes.get(parent);
         Node newNode = s.new Node(child, parent);
-        nodes.add(newNode);
+        nodes.put(newNode, newNode);
         if (Math.abs(child - _parent) <= k)
             result++;
         int lastParent = _parent;
@@ -57,7 +68,6 @@ public class SimularPair {
 //        parents.push(child);
         t.add(_parent);
 //        t.add(child);
-        Node dummyParent = s.new Node(0, null);
         LinkedList<Integer> toAdd = new LinkedList<>();
 
         for (int edgesRowItr = 1; edgesRowItr < n - 1; edgesRowItr++) {
@@ -66,7 +76,7 @@ public class SimularPair {
             child = Integer.parseInt(edgesRowItems[1].trim());
             dummyParent.value = _parent;
 //            TreeSet<Integer> t = new TreeSet<>();
-            parent = nodes.floor(dummyParent);
+            parent = nodes.get(dummyParent);
             newNode = s.new Node(child, parent);
             if (_parent != lastParent) {
                 if (_parent == lastChild) {
@@ -117,7 +127,7 @@ public class SimularPair {
             lastChild = child;
             lastParent = _parent;
 
-            nodes.add(newNode);
+            nodes.put(newNode, newNode);
 
             Integer lower = t.lower(child + k + 1);
             Integer higher = t.higher(child - k - 1);
