@@ -7,7 +7,7 @@ import static java.lang.System.nanoTime;
 
 public class SimularPair {
     public class Node implements Comparable<Node> {
-        final Integer value;
+        public Integer value;
         final Node parent;
 
         public Node(int value, Node parent) {
@@ -57,14 +57,16 @@ public class SimularPair {
 //        parents.push(child);
         t.add(_parent);
 //        t.add(child);
+        Node dummyParent = s.new Node(0, null);
+        LinkedList<Integer> toAdd = new LinkedList<>();
 
         for (int edgesRowItr = 1; edgesRowItr < n - 1; edgesRowItr++) {
             edgesRowItems = br.readLine().split(" ");
             _parent = Integer.parseInt(edgesRowItems[0].trim());
             child = Integer.parseInt(edgesRowItems[1].trim());
-            parent = s.new Node(_parent, null);
+            dummyParent.value = _parent;
 //            TreeSet<Integer> t = new TreeSet<>();
-            parent = nodes.floor(parent);
+            parent = nodes.floor(dummyParent);
             newNode = s.new Node(child, parent);
             if (_parent != lastParent) {
                 if (_parent == lastChild) {
@@ -72,31 +74,34 @@ public class SimularPair {
                     parents.push(_parent);
                 }
                 else if (!parents.contains(_parent)) {
-//                    LinkedList<Integer> toAdd = new LinkedList<>();
-//                    toAdd.push(_parent);
-//                    Integer v = 0;
-//                    while (true) {
-//                        parent = parent.parent;
-//                        if (t.contains(parent.value)) {
-//                            while (parents.peek() != parent.value) {
-//                                v = parents.pop();
-//                                t.remove(v);
-//                            }
-//                            while (!toAdd.isEmpty()) {
-//                              v = toAdd.pop();
-//                              t.add(v);
-//                              parents.push(v);
-//                            }
-//                            break;
-//                        }
-//                    }
-                    t.clear();
-                    parents.clear();
-                    while (parent != null) {
-                        t.add(parent.value);
-                        parents.push(parent.value);
+                    toAdd.clear();
+                    toAdd.push(_parent);
+                    Integer v = 0;
+                    while (true) {
                         parent = parent.parent;
+                        if (t.contains(parent.value)) {
+                            while (parents.peek() != parent.value) {
+                                v = parents.pop();
+                                t.remove(v);
+                            }
+                            while (!toAdd.isEmpty()) {
+                              v = toAdd.pop();
+                              t.add(v);
+                              parents.push(v);
+                            }
+                            break;
+                        }
+                        else {
+                            toAdd.push(parent.value);
+                        }
                     }
+//                    t.clear();
+//                    parents.clear();
+//                    while (parent != null) {
+//                        t.add(parent.value);
+//                        parents.push(parent.value);
+//                        parent = parent.parent;
+//                    }
                 }
                 else
                     while (true) {
